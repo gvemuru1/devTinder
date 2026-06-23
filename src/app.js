@@ -3,20 +3,13 @@ import { dbConnect } from "./config/database.js";
 import { User } from "./models/user.js";
 const app = express();
 
+// Express Middleware
 app.use(express.json());
 
-app.use("/signup", async (req, res, next) => {
-
-    const harsha = {
-        firstName: "harsha",
-        lastName: "bommireddy",
-        phoneNumber: 3280718501,
-        email: "harsahbommi@gmail.com",
-        age: 30
-    };
-
+// Signup API
+app.post("/signup", async (req, res, next) => {
     try {
-        const user = new User(harsha)
+        const user = new User(req.body)
 
         await user.save();
         res.send({ message: `${user.firstName + " " + user.lastName} created successfully` })
@@ -27,7 +20,15 @@ app.use("/signup", async (req, res, next) => {
     }
 });
 
+// Feed API
+app.get("/feed", (req, res, next) => {
+    try {
+        res.send({ message: "feed" })
+    }
+    catch (err) {
 
+    }
+});
 
 
 const startup = async () => {
