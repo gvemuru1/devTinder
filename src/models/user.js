@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+
+
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String
@@ -8,7 +10,9 @@ const userSchema = new mongoose.Schema({
         type: String
 
     }, email: {
-        type: String
+        type: String,
+        required: true
+
     },
     phoneNumber: {
         type: Number
@@ -19,6 +23,8 @@ const userSchema = new mongoose.Schema({
     }
 
 });
+
+userSchema.index({ email: 1 }, { unique: true, sparse: true });
 
 const User = mongoose.model('user', userSchema)
 
