@@ -20,11 +20,35 @@ app.post("/signup", async (req, res, next) => {
     }
     catch (err) {
         if (err.code === 11000) {
-            console.log(err)
             return res.status(400).send("User already exists");
-        } else { return res.status(500).send("Error creating user") }
+        } else {
+            return res.status(500).send("Error creating user");
+        }
     }
 });
+
+//Edit user API
+app.patch("/edituser", async (req, res) => {
+
+    try {
+        const mailID = req.body.email;
+
+        if (!mailID) {
+            return res.status(400).send("Please provide email ID");
+        }
+        const userUpdate = await User.findOneAndUpdate({ email: mailID }, req.body, { returnDocument: "after" });
+        if (userUpdate) {
+            res.send(`${mailID} updated successfully`);
+        } else {
+            res.status(404).send("User not found");
+        }
+    }
+    catch (err) {
+        return res.status(500).send("Error in editing user")
+    }
+
+}
+);
 
 // Feed API
 app.get("/feed", async (req, res) => {
@@ -104,7 +128,6 @@ app.delete("/useremail", async (req, res) => {
 
 }
 );
-
 
 // startup
 const startup = async () => {

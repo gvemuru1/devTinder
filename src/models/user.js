@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema({
     lastName: {
         type: String
 
+    },
+    username: {
+        type: String,
+        required: true
+
     }, email: {
         type: String,
         required: true
@@ -24,7 +29,7 @@ const userSchema = new mongoose.Schema({
 
 });
 
-userSchema.index({ email: 1 }, { unique: true, sparse: true });
+userSchema.index({ email: 1, username: 1 }, { unique: true, sparse: true });
 
 const User = mongoose.model('user', userSchema)
 
