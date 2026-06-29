@@ -28,7 +28,7 @@ app.post("/signup", async (req, res, next) => {
 });
 
 //Edit user API
-app.patch("/edituser", async (req, res) => {
+app.patch("/user", async (req, res) => {
 
     try {
         const mailID = req.body.email;
@@ -36,7 +36,15 @@ app.patch("/edituser", async (req, res) => {
         if (!mailID) {
             return res.status(400).send("Please provide email ID");
         }
-        const userUpdate = await User.findOneAndUpdate({ email: mailID }, req.body, { returnDocument: "after" });
+        const userUpdate = await User.findOneAndUpdate(
+            {
+                email: mailID
+            },
+            req.body,
+            {
+                returnDocument: "after",
+                runValidators: true
+            });
         if (userUpdate) {
             res.send(`${mailID} updated successfully`);
         } else {
@@ -74,7 +82,7 @@ app.get("/useremails", async (req, res) => {
         } else if (usermail.length === 0) {
             return res.status(404).send("No user found")
         } else {
-            res.send(usermail)
+            return res.send(usermail)
         }
     }
     catch (err) {
@@ -106,14 +114,13 @@ app.get("/useremail", async (req, res) => {
 })
 
 // delete by email
-
-app.delete("/useremail", async (req, res) => {
+app.delete("/user", async (req, res) => {
     const mailID = req.body.email;
     try {
         if (!mailID) {
             return res.status(400).send("Please provide email ID")
         } else {
-            const usermail = await User.deleteOne({ email: mailID })
+            const usermail = await User.deleteOne({ email: mailID }, { returnDocument: "after", runValidators: true })
             if (usermail.deletedCount === 0) {
                 return res.status(404).send("No user found")
             } else {
@@ -129,6 +136,7 @@ app.delete("/useremail", async (req, res) => {
 }
 );
 
+
 // startup
 const startup = async () => {
     try {
@@ -143,7 +151,6 @@ const startup = async () => {
     }
 
 }
-
 startup();
 
 

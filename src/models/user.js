@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     firstName: {
-        type: String
+        type: String,
+        required: true
 
     },
     lastName: {
@@ -11,12 +12,13 @@ const userSchema = new mongoose.Schema({
 
     },
     username: {
-        type: String,
-        required: true
+        type: String
 
     }, email: {
         type: String,
-        required: true
+        required: true,
+        lowercase: true,
+        trim: true
 
     },
     phoneNumber: {
@@ -25,12 +27,27 @@ const userSchema = new mongoose.Schema({
     },
     age: {
         type: Number
+    },
+    skills: {
+        type: [String],
+        default: []
+    },
+    photourl: {
+        type: String,
+        default: null
+    },
+    bio: {
+        type: String
+    },
+    password: {
+        type: String,
+        required: true
     }
 
 });
 
-userSchema.index({ email: 1, username: 1 }, { unique: true, sparse: true });
+userSchema.index({ email: 1 }, { unique: true, sparse: true });
 
-const User = mongoose.model('user', userSchema)
+const User = mongoose.model('user', userSchema, { timestamps: true });
 
 export { User }
