@@ -6,17 +6,38 @@ const app = express();
 // Express Middleware
 app.use(express.json());
 
+
+const calDOB = (dob) => {
+    const today = new Date();
+    const dov = new Date(dob);
+    let age = today.getFullYear() - dov.getFullYear();
+    const month = today.getMonth() - dov.getMonth();
+    if (month < 0 || month === 0 && today.getDate() < dob.getDate()) {
+        age--;
+    }
+    return age;
+}
+
 // Signup API
-app.post("/signup", async (req, res, next) => {
+app.post("/signup", async (req, res) => {
     try {
-        const user = new User(req.body)
-        // const userExists = await User.findOne({ email: user.email });
-        // if (userExists) {
-        //     return res.status(400).send("User already exists")
-        // } else {
-        await user.save();
-        res.send({ message: `${user.firstname + " " + user.lastname} created successfully` })
-        // }
+        const { password, conformpassword, ...safeData } = req.body;
+        if (!password || !conformpassword) {
+            return res.status(400).send("Passwords are required");
+        } else if (password !== conformpassword) {
+            return res.status(400).send("Passwords do not match");
+        } else {
+            const user = new User({ ...safeData, password });
+            const age = calDOB(user.dob);
+            user.age = age;
+            if (age < 18) {
+                return res.status(400).send("User must be 18 years old");
+            }
+
+            await user.save();
+            res.send({ message: `${user.firstname + " " + user.lastname} created successfully` })
+        }
+
     }
     catch (err) {
         if (err.code === 11000) {
@@ -32,30 +53,35 @@ app.post("/signup", async (req, res, next) => {
 app.patch("/user", async (req, res) => {
 
     try {
-        const mailID = req.body.email;
-
+        const { email: mailID, dob, age, ...safeData } = req.body
         if (!mailID) {
             return res.status(400).send("Please provide email ID");
         }
+
+
+
         const userUpdate = await User.findOneAndUpdate(
             {
                 email: mailID
             },
-            req.body,
+            safeData,
             {
                 returnDocument: "after",
                 runValidators: true
             });
+
         if (userUpdate) {
             res.send(`${mailID} updated successfully`);
         } else {
             res.status(404).send("User not found");
         }
+
+
     }
+
     catch (err) {
         return res.status(500).send("Error in editing user")
     }
-
 }
 );
 
@@ -73,7 +99,7 @@ app.get("/feed", async (req, res) => {
 });
 
 // Get one by email API
-app.get("/useremail", async (req, res) => {
+app.get("/byemail", async (req, res) => {
     const mailID = req.body.email;
     try {
         const usermail = await User.findOne({ email: mailID })

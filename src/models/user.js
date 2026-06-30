@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: {
             validator: (v) => {
-                const userPattern = /^[a-zA-z0-9_]$/;
+                const userPattern = /^[a-zA-Z0-9_]+$/;
                 return userPattern.test(v);
             }, message: "Only letters, numbers and underscores are allowed"
         }
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
 
     },
     phonenumber: {
-        countycode: {
+        countrycode: {
             type: String,
             default: "+1",
             minLength: [0],
@@ -58,10 +58,11 @@ const userSchema = new mongoose.Schema({
         }
 
     },
+    dob: {
+        type: Date
+    },
     age: {
-        type: Number,
-        min: 18,
-        max: 99
+        type: String
     },
     skills: {
         type: [String],
@@ -80,16 +81,13 @@ const userSchema = new mongoose.Schema({
         default: null,
         maxLength: [100, "Bio should be less than 100 characters"]
     },
-    password: {
-        type: String,
-        required: true,
-        validate: [validator.isStrongPassword, "Password should be strong"]
-    },
     gender: {
         type: String,
+        lowercase: true,
+        trim: true,
         validate: {
             validator: (value) => {
-                const gender = ["Male", "Female", "Other"]
+                const gender = ["male", "female", "other"]
                 if (gender.includes(value)) {
                     return true;
                 } else {

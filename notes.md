@@ -10,4 +10,4 @@
  - check conform password but dont save it in DB
  - Install validator
  - Explore validator library funcation and Use vlidator funcs for password, email, photoURL
- - NEVER TRUST req.body
+ - NEVER TRUST req.body 
