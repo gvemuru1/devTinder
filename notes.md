@@ -1,10 +1,10 @@
- - Explore schematype options from the documention
- - add required, unique, lowercase, min, minLength, trim
- - Add default
- - Create a custom validate function for gender
+ - Explore schematype options from the documention. *Done*
+ - add required, unique, lowercase, min, minLength, trim  *Done*
+ - Add default *Done*
+ - Create a custom validate function for gender *Done*
  - Improve the DB schema - PUT all appropiate validations on each field in Schema
- - Add timestamps to the userSchema
- - Add API level validation on Patch request & Signup post api
+ - Add timestamps to the userSchema *Done*
+ - Add API level validation on Patch request & Signup post api 
  - DATA Sanitizing - Add API validation for each field
  - Add errors in PATCH request to validate data 
  - check conform password but dont save it in DB

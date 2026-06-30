@@ -15,14 +15,15 @@ app.post("/signup", async (req, res, next) => {
         //     return res.status(400).send("User already exists")
         // } else {
         await user.save();
-        res.send({ message: `${user.firstName + " " + user.lastName} created successfully` })
+        res.send({ message: `${user.firstname + " " + user.lastname} created successfully` })
         // }
     }
     catch (err) {
         if (err.code === 11000) {
             return res.status(400).send("User already exists");
         } else {
-            return res.status(500).send("Error creating user");
+            // console.log(err)
+            return res.status(500).send("Error creating user :" + err);
         }
     }
 });
@@ -70,27 +71,6 @@ app.get("/feed", async (req, res) => {
         res.status(500).send("Error in feed")
     }
 });
-
-// Get all by email API
-app.get("/useremails", async (req, res) => {
-    const mailID = req.body.email;
-    try {
-        const usermail = await User.find({ email: mailID })
-
-        if (!mailID) {
-            return res.status(400).send("Please provide email")
-        } else if (usermail.length === 0) {
-            return res.status(404).send("No user found")
-        } else {
-            return res.send(usermail)
-        }
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send("Error in getting user")
-    }
-
-})
 
 // Get one by email API
 app.get("/useremail", async (req, res) => {
