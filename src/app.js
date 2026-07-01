@@ -2,6 +2,7 @@ import express from "express";
 import { dbConnect } from "./config/database.js";
 import { User } from "./models/user.js";
 import { calDOB, validateUser, checkPassword } from "./utils/validation.js";
+import bcrypt from "bcrypt";
 const app = express();
 
 // Express Middleware
@@ -41,7 +42,27 @@ app.post("/signup", async (req, res) => {
 });
 
 
-// app.post("/login", async (req, res) => {});
+
+// loginAPI
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const validuser = await User.findOne({ email: email });
+
+        if (!validuser) {
+            return res.status(401).send("Invalid Creditionals")
+        }
+        const validPassword = await bcrypt.compare(password, validuser.password)
+        if (!validPassword) {
+            return res.status(401).send("Invalid Creditionals")
+        }
+        return res.status(200).send("Login Sucessfully");
+
+    } catch (err) {
+        return res.status(500).send("Internal Service error" + err)
+
+    };
+});
 
 //Edit user API
 app.patch("/user", async (req, res) => {
