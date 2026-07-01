@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import "dotenv/config";
 
-const URI = "mongodb+srv://gurucharanv:Sailaja%4024@cluster0.p8bpcrg.mongodb.net/"
+const URI = process.env.MONGODB_URI
 
 const dbConnect = async () => {
     await mongoose.connect(URI);
