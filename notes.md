@@ -11,3 +11,7 @@
  - Install validator
  - Explore validator library funcation and Use vlidator funcs for password, email, photoURL
  - NEVER TRUST req.body 
+
+
+
+ make a validation  module. 

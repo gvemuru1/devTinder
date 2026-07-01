@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
-
+// required fields -> firstname, username, email, dob,
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
@@ -59,10 +59,11 @@ const userSchema = new mongoose.Schema({
 
     },
     dob: {
-        type: Date
+        type: Date,
+        required: true,
     },
     age: {
-        type: String
+        type: String,
     },
     skills: {
         type: [String],
@@ -96,7 +97,11 @@ const userSchema = new mongoose.Schema({
             }
 
         }
+    }, password: {
+        type: String,
+        required: true
     }
+
 
 }, { timestamps: true });
 

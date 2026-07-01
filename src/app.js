@@ -1,53 +1,47 @@
 import express from "express";
 import { dbConnect } from "./config/database.js";
 import { User } from "./models/user.js";
+import { calDOB, validateUser, checkPassword } from "./utils/validation.js";
 const app = express();
 
 // Express Middleware
 app.use(express.json());
 
 
-const calDOB = (dob) => {
-    const today = new Date();
-    const dov = new Date(dob);
-    let age = today.getFullYear() - dov.getFullYear();
-    const month = today.getMonth() - dov.getMonth();
-    if (month < 0 || month === 0 && today.getDate() < dob.getDate()) {
-        age--;
-    }
-    return age;
-}
+
 
 // Signup API
 app.post("/signup", async (req, res) => {
     try {
         const { password, conformpassword, ...safeData } = req.body;
-        if (!password || !conformpassword) {
-            return res.status(400).send("Passwords are required");
-        } else if (password !== conformpassword) {
-            return res.status(400).send("Passwords do not match");
-        } else {
-            const user = new User({ ...safeData, password });
-            const age = calDOB(user.dob);
-            user.age = age;
-            if (age < 18) {
-                return res.status(400).send("User must be 18 years old");
-            }
 
-            await user.save();
-            res.send({ message: `${user.firstname + " " + user.lastname} created successfully` })
-        }
+        validateUser(safeData);
+        checkPassword(password, conformpassword);
 
+        //password encryption
+        const hashedPassword = await hashPassword(password);
+
+        const user = new User({ ...safeData, password: hashedPassword });
+
+        //calculate age and store's age in user model
+        const age = calDOB(user.dob);
+        user.age = age;
+
+        await user.save();
+        res.send({ message: `${user.firstname + " " + user.lastname} created successfully` })
     }
+
     catch (err) {
         if (err.code === 11000) {
             return res.status(400).send("User already exists");
         } else {
-            // console.log(err)
             return res.status(500).send("Error creating user :" + err);
         }
     }
 });
+
+
+// app.post("/login", async (req, res) => {});
 
 //Edit user API
 app.patch("/user", async (req, res) => {
@@ -57,8 +51,6 @@ app.patch("/user", async (req, res) => {
         if (!mailID) {
             return res.status(400).send("Please provide email ID");
         }
-
-
 
         const userUpdate = await User.findOneAndUpdate(
             {
@@ -141,6 +133,8 @@ app.delete("/user", async (req, res) => {
 
 }
 );
+
+
 
 
 // startup
